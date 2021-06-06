@@ -15,26 +15,14 @@ resource "aws_dynamodb_table" "monitoring-table" {
   }
 }
 
-resource "aws_dynamodb_table_item" "ch" {
+resource "aws_dynamodb_table_item" "items" {
+    count = length(var.countries)
   table_name = aws_dynamodb_table.monitoring-table.name
   hash_key   = aws_dynamodb_table.monitoring-table.hash_key
 
   item = <<ITEM
 {
-  "Country": {"S": "ch"},
-  "failedReplication": {"N": "0"},
-  "failedRestore": {"N": "0"}
-}
-ITEM
-}
-
-resource "aws_dynamodb_table_item" "pl" {
-  table_name = aws_dynamodb_table.monitoring-table.name
-  hash_key   = aws_dynamodb_table.monitoring-table.hash_key
-
-  item = <<ITEM
-{
-  "Country": {"S": "pl"},
+  "Country": {"S": "${var.countries[count.index]}"},
   "failedReplication": {"N": "0"},
   "failedRestore": {"N": "0"}
 }

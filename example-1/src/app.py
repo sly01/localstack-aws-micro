@@ -1,23 +1,25 @@
 import boto3
 
-dynamodb = boto3.resource('dynamodb', endpoint_url="http://localhost:4566")
-table = dynamodb.Table('Monitoring')
+TABLE_NAME="Monitoring"
+dynamodb = boto3.client('dynamodb', endpoint_url="http://localhost:4566")
+
 
 def get_item(country: str):
     try:
-        response = table.get_item(Key={'Country': country})
+        response = dynamodb.get_item(TableName=TABLE_NAME, Key={'Country': country})
     except Exception as e:
         print("Error -> ",e)
     return response['Item']
 
 def update_item(country: str, error_type: str):
-    response = table.update_item(
+    response = dynamodb.update_item(
+        TableName=TABLE_NAME,
         Key={
-            'Country': country
+            'Country': {'S': country}
         },
         UpdateExpression=f"set {error_type} = {error_type} + :increment",
         ExpressionAttributeValues={
-            ':increment': 1
+            ':increment': {'N': '1'}
         },
         ReturnValues='UPDATED_NEW'
     )
